@@ -1,5 +1,5 @@
 class Pixel:
-    def __init__(self, value, x, y, id=None):
+    def __init__(self, x, y, value=0, id=None):
         self.id = id
         self.value = value
         self.y = y
@@ -11,12 +11,15 @@ class Pixel:
     def bind_id(self, id):
         self.id = id
 
-    def togglePixel(self, event, canvas):
-        # Modify this function to perfo rm your desired action on click
-        self.value = 1 if self.value < 0.8 else 0
+    def toggle_pixel(self, canvas):
+        self.setPixel(canvas, 1 if self.value < 0.3 else 0)
+
+    def set_pixel(self, canvas, value):
+        self.value = max(min(value, 1), 0)
 
         color = int(self.value*255)
         colorCode = "#%02x%02x%02x" % (color, color, color)
         outline = "gray" if self.value < 0.3 else "black"
 
-        canvas.itemconfig(self.id, fill=colorCode, outline=outline)
+        if id is not None:
+            canvas.itemconfig(self.id, fill=colorCode, outline=outline)
