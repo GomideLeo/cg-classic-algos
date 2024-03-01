@@ -9,6 +9,13 @@ class Circle:
                 (end_pos[0] - start_pos[0]) ** 2 + (end_pos[1] - start_pos[1]) ** 2
             )
         )
+    
+    def __repr__(self) -> str:
+        return f'Cricle {self.center}, r: {self.radius}'
+    
+    def translate(self, x, y):
+        self.center = (self.center[0] + x, self.center[1] + y)
+        return self
 
     def plot(self, canvas, grid):
         def plot_points(x, y):

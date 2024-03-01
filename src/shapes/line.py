@@ -4,7 +4,15 @@ class Line:
     def __init__(self, start_pos, end_pos):
         self.start_pos = start_pos
         self.end_pos = end_pos
-        
+    
+
+    def __repr__(self) -> str:
+        return f'Line {self.start_pos} -> {self.end_pos}'
+    
+    def translate(self, x, y):
+        self.start_pos = (self.start_pos[0] + x, self.start_pos[1] + y)
+        self.end_pos = (self.end_pos[0] + x, self.end_pos[1] + y)
+        return self
     
     def plot_dda(self, canvas, grid, round_func=round):
         dx = self.end_pos[0] - self.start_pos[0]
