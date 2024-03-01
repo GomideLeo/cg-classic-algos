@@ -42,8 +42,8 @@ class Grid:
                 x2, y2 = x1 + pixel_size, y1 + pixel_size
 
                 color = int(px.value * 255)
-                colorCode = "#%02x%02x%02x" % (color, color, color)
-                outline = "gray" if px.value < 0.3 else "black"
+                colorCode = '#%02x%02x%02x' % (color, color, color)
+                outline = 'gray' if px.value < 0.3 else 'black'
 
                 # Draw the white rectangle with borders
                 id = canvas.create_rectangle(
@@ -54,7 +54,7 @@ class Grid:
                 # Bind click event to the rectangle object
                 canvas.tag_bind(
                     id,
-                    "<Button-1>",
+                    '<Button-1>',
                     lambda event, canvas=canvas, px=px: callback(event, canvas, px),
                 )
 
