@@ -15,7 +15,21 @@ class Circle:
     
     def translate(self, x, y):
         self.center = (self.center[0] + x, self.center[1] + y)
-        return self
+    
+    def reflect(self, reflect_x=True, reflect_y=True, reflect_origin=(0, 0)):
+        # using Array here bc tuple is static
+        temp_pos = [self.center[0] - reflect_origin[0], self.center[1] - reflect_origin[1]]
+
+        if reflect_x:
+            temp_pos[1] = -temp_pos[1]
+
+        if reflect_y:
+            temp_pos[0] = -temp_pos[0]
+
+        self.center = (
+            int(temp_pos[0] + reflect_origin[0]),
+            int(temp_pos[1] + reflect_origin[1]),
+        )
 
     def plot(self, canvas, grid):
         def plot_points(x, y):

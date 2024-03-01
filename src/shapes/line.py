@@ -12,7 +12,29 @@ class Line:
     def translate(self, x, y):
         self.start_pos = (self.start_pos[0] + x, self.start_pos[1] + y)
         self.end_pos = (self.end_pos[0] + x, self.end_pos[1] + y)
-        return self
+
+    def reflect(self, reflect_x=True, reflect_y=True, reflect_origin=(0, 0)):
+        # using Array here bc tuple is static
+        temp_pos1 = [self.start_pos[0] - reflect_origin[0], self.start_pos[1] - reflect_origin[1]]
+        temp_pos2 = [self.end_pos[0] - reflect_origin[0], self.end_pos[1] - reflect_origin[1]]
+
+        if reflect_x:
+            temp_pos1[1] = -temp_pos1[1]
+            temp_pos2[1] = -temp_pos2[1]
+
+        if reflect_y:
+            temp_pos1[0] = -temp_pos1[0]
+            temp_pos2[0] = -temp_pos2[0]
+
+        self.start_pos = (
+            int(temp_pos1[0] + reflect_origin[0]),
+            int(temp_pos1[1] + reflect_origin[1]),
+        )
+
+        self.end_pos = (
+            int(temp_pos2[0] + reflect_origin[0]),
+            int(temp_pos2[1] + reflect_origin[1]),
+        )
     
     def plot_dda(self, canvas, grid, round_func=round):
         dx = self.end_pos[0] - self.start_pos[0]
