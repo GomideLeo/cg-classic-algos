@@ -1,4 +1,5 @@
 import math as maths 
+from math import sin, cos, radians
 
 class Line:
     def __init__(self, start_pos, end_pos):
@@ -34,6 +35,31 @@ class Line:
         self.end_pos = (
             int(temp_pos2[0] + reflect_origin[0]),
             int(temp_pos2[1] + reflect_origin[1]),
+        )
+
+    def rotate(self, angle, origin=(0, 0)):
+        temp_pos1 = (self.start_pos[0] - origin[0], self.start_pos[1] - origin[1])
+        temp_pos2 = (self.end_pos[0] - origin[0], self.end_pos[1] - origin[1])
+
+        theta = radians(angle)
+
+        temp_pos1 = (
+            temp_pos1[0] * cos(theta) - temp_pos1[1] * sin(theta),
+            temp_pos1[0] * sin(theta) + temp_pos1[1] * cos(theta)
+        )
+        temp_pos2 = (
+            temp_pos2[0] * cos(theta) - temp_pos2[1] * sin(theta),
+            temp_pos2[0] * sin(theta) + temp_pos2[1] * cos(theta)
+        )
+
+        self.start_pos = (
+            int(temp_pos1[0] + origin[0]),
+            int(temp_pos1[1] + origin[1]),
+        )
+
+        self.end_pos = (
+            int(temp_pos2[0] + origin[0]),
+            int(temp_pos2[1] + origin[1]),
         )
     
     def plot_dda(self, canvas, grid, round_func=round):

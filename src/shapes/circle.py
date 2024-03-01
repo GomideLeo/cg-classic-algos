@@ -1,5 +1,5 @@
 import math as maths
-
+from math import sin, cos, radians
 
 class Circle:
     def __init__(self, start_pos, end_pos):
@@ -29,6 +29,21 @@ class Circle:
         self.center = (
             int(temp_pos[0] + reflect_origin[0]),
             int(temp_pos[1] + reflect_origin[1]),
+        )
+
+    def rotate(self, angle, origin=(0, 0)):
+        temp_pos = (self.center[0] - origin[0], self.center[1] - origin[1])
+
+        theta = radians(angle)
+
+        temp_pos = (
+            temp_pos[0] * cos(theta) - temp_pos[1] * sin(theta),
+            temp_pos[0] * sin(theta) + temp_pos[1] * cos(theta)
+        )
+
+        self.center = (
+            int(temp_pos[0] + origin[0]),
+            int(temp_pos[1] + origin[1]),
         )
 
     def plot(self, canvas, grid):
