@@ -29,7 +29,7 @@ class Circle:
             if p < 0:
                 p = p + 4 * x + 6
             else:
-                p = p + 4 * (x - y) + 10
                 y -= 1
+                p = p + 4 * (x - y) + 10
             x += 1
             plot_points(x, y)
