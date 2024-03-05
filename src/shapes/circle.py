@@ -45,6 +45,19 @@ class Circle:
             int(temp_pos[0] + origin[0]),
             int(temp_pos[1] + origin[1]),
         )
+    
+    def scale(self, x, y, origin=(0, 0)):
+        temp_pos = (self.center[0] - origin[0], self.center[1] - origin[1])
+
+        temp_pos = (
+            temp_pos[0] * x,
+            temp_pos[1] * y
+        )
+
+        self.center = (
+            int(temp_pos[0] + origin[0]),
+            int(temp_pos[1] + origin[1]),
+        )
 
     def plot(self, canvas, grid):
         def plot_points(x, y):
@@ -62,10 +75,10 @@ class Circle:
         plot_points(x, y)
 
         while x < y:
+            x += 1
             if p < 0:
                 p = p + 4 * x + 6
             else:
                 y -= 1
                 p = p + 4 * (x - y) + 10
-            x += 1
             plot_points(x, y)

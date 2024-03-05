@@ -61,6 +61,29 @@ class Line:
             int(temp_pos2[0] + origin[0]),
             int(temp_pos2[1] + origin[1]),
         )
+
+    def scale(self, x, y, origin=(0, 0)):
+        temp_pos1 = (self.start_pos[0] - origin[0], self.start_pos[1] - origin[1])
+        temp_pos2 = (self.end_pos[0] - origin[0], self.end_pos[1] - origin[1])
+
+        temp_pos1 = (
+            temp_pos1[0] * x,
+            temp_pos1[1] * y
+        )
+        temp_pos2 = (
+            temp_pos2[0] * x,
+            temp_pos2[1] * y
+        )
+
+        self.start_pos = (
+            int(temp_pos1[0] + origin[0]),
+            int(temp_pos1[1] + origin[1]),
+        )
+
+        self.end_pos = (
+            int(temp_pos2[0] + origin[0]),
+            int(temp_pos2[1] + origin[1]),
+        )
     
     def plot_dda(self, canvas, grid, round_func=round):
         dx = self.end_pos[0] - self.start_pos[0]

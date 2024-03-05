@@ -117,9 +117,7 @@ class PaintApp:
     def translate_dialog(self):
         dialog = tk.Toplevel()
         label = tk.Label(dialog, text='')
-        label.grid(
-            row=3, column=0, padx=5, pady=5, columnspan=4
-        )
+        label.grid(row=3, column=0, padx=5, pady=5, columnspan=4)
 
         tk.Label(dialog, text='X Factor:').grid(row=0, column=0, padx=5, pady=5)
         x_translate = tk.Entry(dialog, width=10)
@@ -138,11 +136,9 @@ class PaintApp:
         x_translate.insert(0, '0')
         y_translate.insert(0, '0')
 
-        
         def close():
-            if (
-                (x_translate.get().lstrip('-+').isnumeric() == False)
-                or (y_translate.get().lstrip('-+').isnumeric() == False)
+            if (x_translate.get().lstrip('-+').isnumeric() == False) or (
+                y_translate.get().lstrip('-+').isnumeric() == False
             ):
                 label.config(text='Warning: Translate values must be integer!"')
                 return
@@ -176,9 +172,7 @@ class PaintApp:
     def rotation_dialog(self):
         dialog = tk.Toplevel()
         label = tk.Label(dialog, text='')
-        label.grid(
-            row=3, column=0, padx=5, pady=5, columnspan=4
-        )
+        label.grid(row=3, column=0, padx=5, pady=5, columnspan=4)
 
         tk.Label(dialog, text='Rotation (θ°):').grid(row=0, column=0, padx=5, pady=5)
         theta = tk.Entry(dialog, width=10)
@@ -203,14 +197,11 @@ class PaintApp:
         y_origin.insert(0, str((self.rows - 1) / 2))
 
         def close():
-            if (
-                (theta.get().lstrip('-+').isnumeric() == False)
-            ):
+            if theta.get().lstrip('-+').isnumeric() == False:
                 label.config(text='Warning: Theta value must be integer!"')
                 return
-            elif (
-                (x_origin.get().replace('.', '', 1).isnumeric() == False)
-                or (y_origin.get().replace('.', '', 1).isnumeric() == False)
+            elif (x_origin.get().replace('.', '', 1).isnumeric() == False) or (
+                y_origin.get().replace('.', '', 1).isnumeric() == False
             ):
                 label.config(text='Warning: Origin values must be positive numbers!"')
                 return
@@ -241,19 +232,17 @@ class PaintApp:
             row=4, column=2, columnspan=2, pady=10
         )
 
-    def reflection_dialog(self):
+    def scale_dialog(self):
         dialog = tk.Toplevel()
         label = tk.Label(dialog, text='')
-        label.grid(
-            row=3, column=0, padx=5, pady=5, columnspan=4
-        )
+        label.grid(row=3, column=0, padx=5, pady=5, columnspan=4)
 
-        flip_x = tk.BooleanVar(value=False)
-        flip_y = tk.BooleanVar(value=False)
-
-        tk.Label(dialog, text='Reflect Axis:').grid(row=0, column=0, padx=5, pady=5)
-        tk.Checkbutton(dialog, text='X',variable=flip_x, onvalue=True, offvalue=False).grid(row=0, column=1, padx=5, pady=5)
-        tk.Checkbutton(dialog, text='Y',variable=flip_y, onvalue=True, offvalue=False).grid(row=0, column=2, padx=5, pady=5)
+        tk.Label(dialog, text='X Factor:').grid(row=0, column=0, padx=5, pady=5)
+        x_scale = tk.Entry(dialog, width=10)
+        x_scale.grid(row=0, column=1, padx=5, pady=5)
+        tk.Label(dialog, text='Y Factor:').grid(row=0, column=2, padx=5, pady=5)
+        y_scale = tk.Entry(dialog, width=10)
+        y_scale.grid(row=0, column=3, padx=5, pady=5)
 
         shape_val = tk.StringVar(value='All')
         tk.Label(dialog, text='Shape:').grid(row=1, column=0, padx=5, pady=5)
@@ -275,8 +264,85 @@ class PaintApp:
 
         def close():
             if (
-                (x_origin.get().replace('.', '', 1).isnumeric() == False)
-                or (y_origin.get().replace('.', '', 1).isnumeric() == False)
+                x_scale.get().lstrip('-+').replace('.', '', 1).isnumeric() == False
+                or y_scale.get().lstrip('-+').replace('.', '', 1).isnumeric() == False
+            ):
+                label.config(text='Warning: Scale factor must be numeric!"')
+                return
+            elif (x_origin.get().replace('.', '', 1).isnumeric() == False) or (
+                y_origin.get().replace('.', '', 1).isnumeric() == False
+            ):
+                label.config(text='Warning: Origin values must be positive numbers!"')
+                return
+            elif shape.current() < 0:
+                label.config(text='Select an option!')
+                return
+
+            origin = (
+                float(x_origin.get()),
+                float(y_origin.get()),
+            )
+
+            x_s, y_s = (
+                float(x_scale.get()),
+                float(y_scale.get()),
+            )
+
+            if shape.current() == 0:
+                for s in self.shapes:
+                    s.scale(x_s, y_s, origin)
+            else:
+                self.shapes[shape.current() - 1].scale(x_s, y_s, origin)
+
+            self.reset_canvas(destroy_shapes=False)
+
+            dialog.destroy()
+
+        tk.Button(dialog, text='Scale', command=close).grid(
+            row=4, column=0, columnspan=2, pady=10
+        )
+
+        tk.Button(dialog, text='Cancel', command=dialog.destroy).grid(
+            row=4, column=2, columnspan=2, pady=10
+        )
+
+    def reflection_dialog(self):
+        dialog = tk.Toplevel()
+        label = tk.Label(dialog, text='')
+        label.grid(row=3, column=0, padx=5, pady=5, columnspan=4)
+
+        flip_x = tk.BooleanVar(value=False)
+        flip_y = tk.BooleanVar(value=False)
+
+        tk.Label(dialog, text='Reflect Axis:').grid(row=0, column=0, padx=5, pady=5)
+        tk.Checkbutton(
+            dialog, text='X', variable=flip_x, onvalue=True, offvalue=False
+        ).grid(row=0, column=1, padx=5, pady=5)
+        tk.Checkbutton(
+            dialog, text='Y', variable=flip_y, onvalue=True, offvalue=False
+        ).grid(row=0, column=2, padx=5, pady=5)
+
+        shape_val = tk.StringVar(value='All')
+        tk.Label(dialog, text='Shape:').grid(row=1, column=0, padx=5, pady=5)
+        shape = ttk.Combobox(dialog, textvariable=shape_val)
+        shape.config(values=('All', *[str(s) for s in self.shapes]))
+        shape['state'] = 'readonly'
+        shape.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+
+        tk.Label(dialog, text='Origin X:').grid(row=2, column=0, padx=5, pady=5)
+        x_origin = tk.Entry(dialog, width=10)
+        x_origin.grid(row=2, column=1, padx=5, pady=5)
+
+        tk.Label(dialog, text='Origin Y:').grid(row=2, column=2, padx=5, pady=5)
+        y_origin = tk.Entry(dialog, width=10)
+        y_origin.grid(row=2, column=3, padx=5, pady=5)
+
+        x_origin.insert(0, str((self.cols - 1) / 2))
+        y_origin.insert(0, str((self.rows - 1) / 2))
+
+        def close():
+            if (x_origin.get().replace('.', '', 1).isnumeric() == False) or (
+                y_origin.get().replace('.', '', 1).isnumeric() == False
             ):
                 label.config(text='Warning: Origin values must be positive numbers!"')
                 return
@@ -293,7 +359,9 @@ class PaintApp:
                 for s in self.shapes:
                     s.reflect(flip_x.get(), flip_y.get(), origin)
             else:
-                self.shapes[shape.current() - 1].reflect(flip_x.get(), flip_y.get(), origin)
+                self.shapes[shape.current() - 1].reflect(
+                    flip_x.get(), flip_y.get(), origin
+                )
 
             self.reset_canvas(destroy_shapes=False)
 
@@ -332,6 +400,7 @@ class PaintApp:
             label='Translate', command=lambda: self.translate_dialog()
         )
         transf_menu.add_command(label='Rotate', command=lambda: self.rotation_dialog())
+        transf_menu.add_command(label='Scale', command=lambda: self.scale_dialog())
         transf_menu.add_command(
             label='Reflection', command=lambda: self.reflection_dialog()
         )
