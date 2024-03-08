@@ -58,6 +58,14 @@ class Circle:
             int(temp_pos[0] + origin[0]),
             int(temp_pos[1] + origin[1]),
         )
+    
+    def crop(self, xy_min, xy_max):
+        return (
+            self.center[0] >= xy_min[0]
+            and self.center[0] < xy_max[0]
+            and self.center[1] >= xy_min[1]
+            and self.center[1] < xy_max[1]
+        )
 
     def plot(self, canvas, grid):
         def plot_points(x, y):
@@ -75,10 +83,10 @@ class Circle:
         plot_points(x, y)
 
         while x < y:
-            x += 1
             if p < 0:
-                p = p + 4 * x + 6
+                p += 4 * x + 6
             else:
+                p += 4 * (x - y) + 10
                 y -= 1
-                p = p + 4 * (x - y) + 10
+            x += 1
             plot_points(x, y)

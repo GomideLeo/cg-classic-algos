@@ -40,6 +40,21 @@ class PaintApp:
             c.plot(canvas, self.grid)
             self.start_pos = None
 
+    def crop(self, canvas, px):
+        if not hasattr(self, 'start_pos'):
+            self.start_pos = None
+        if self.start_pos is None:
+            self.prev_value = px.value
+            px.set_pixel(canvas, 0.5)
+            self.start_pos = (px.x, px.y)
+        else:
+            self.grid.get_pixel(*self.start_pos).set_pixel(canvas, self.prev_value)
+            self.prev_value = None
+            c = Circle(self.start_pos, (px.x, px.y))
+            self.shapes.append(c)
+            c.plot(canvas, self.grid)
+            self.start_pos = None
+
     def make_shape(self, ev, canvas, px):
         if self.draw_shape.get() == 'point':
             self.make_point(canvas, px)
@@ -47,12 +62,14 @@ class PaintApp:
             self.make_line(canvas, px)
         elif self.draw_shape.get() == 'circle':
             self.make_circle(canvas, px)
+        elif self.draw_shape.get() == 'crop':
+            self.crop(canvas, px)
 
-    def reset_canvas(self, destroy_shapes=True):
+    def reset_canvas(self, destroy_shapes=True, origin=(0,0)):
         if hasattr(self, 'canvas'):
             self.canvas.destroy()
 
-        self.grid = Grid(self.rows, self.cols)
+        self.grid = Grid(self.rows, self.cols, origin)
         self.canvas = self.grid.make_canvas(
             self.root, self.height, self.width, self.make_shape
         )
@@ -60,8 +77,12 @@ class PaintApp:
         if destroy_shapes or not hasattr(self, 'shapes'):
             self.shapes = []
         else:
+            max_pos = (origin[0] + self.cols, origin[1] + self.rows)
             for s in self.shapes:
-                s.plot(self.canvas, self.grid)
+                if s.crop(origin, max_pos, self.crop_algo.get()) if isinstance(s, Line) else s.crop(origin, max_pos):
+                    s.plot(self.canvas, self.grid, self.line_algo.get()) if isinstance(s, Line) else s.plot(self.canvas, self.grid)
+                else:
+                    print(f'shape {str(s)} ignored')
 
     def resize_dialog(self):
         dialog = tk.Toplevel()
@@ -388,28 +409,25 @@ class PaintApp:
         configs_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Configs', menu=configs_menu)
 
-        configs_menu.add_command(label='Resize', command=lambda: self.resize_dialog())
-        configs_menu.add_command(label='Reset', command=lambda: self.reset_canvas())
+        configs_menu.add_command(label='Resize', command=self.resize_dialog)
+        configs_menu.add_command(label='Reset', command=self.reset_canvas)
         configs_menu.add_separator()
         configs_menu.add_command(label='Exit', command=root.destroy)
 
         transf_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Transformations', menu=transf_menu)
 
-        transf_menu.add_command(
-            label='Translate', command=lambda: self.translate_dialog()
-        )
-        transf_menu.add_command(label='Rotate', command=lambda: self.rotation_dialog())
-        transf_menu.add_command(label='Scale', command=lambda: self.scale_dialog())
-        transf_menu.add_command(
-            label='Reflection', command=lambda: self.reflection_dialog()
-        )
+        transf_menu.add_command(label='Translate', command=self.translate_dialog)
+        transf_menu.add_command(label='Rotate', command=self.rotation_dialog)
+        transf_menu.add_command(label='Scale', command=self.scale_dialog)
+        transf_menu.add_command(label='Reflection', command=self.reflection_dialog)
 
         draw_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Draw', menu=draw_menu)
 
         self.draw_shape = tk.StringVar(value='point')
         self.line_algo = tk.StringVar(value='dda')
+        self.crop_algo = tk.StringVar(value='cohen-sutherland')
 
         draw_menu.add_checkbutton(
             label='Point', onvalue='point', variable=self.draw_shape
@@ -420,6 +438,13 @@ class PaintApp:
         draw_menu.add_checkbutton(
             label='Circle', onvalue='circle', variable=self.draw_shape
         )
+        draw_menu.add_checkbutton(
+            label='Crop', onvalue='crop', variable=self.draw_shape
+        )
+
+        draw_menu.add_separator()
+
+        draw_menu.add_command(label='Reset Crop', command=self.reflection_dialog)
 
         draw_menu.add_separator()
 
@@ -428,4 +453,15 @@ class PaintApp:
         line_menu.add_checkbutton(label='DDA', onvalue='dda', variable=self.line_algo)
         line_menu.add_checkbutton(
             label='Bresenham', onvalue='bresenham', variable=self.line_algo
+        )
+
+        crop_menu = tk.Menu(draw_menu, tearoff=0)
+        draw_menu.add_cascade(label='Crop Algorithim', menu=crop_menu)
+        crop_menu.add_checkbutton(
+            label='Cohen-Sutherland',
+            onvalue='cohen-sutherland',
+            variable=self.crop_algo,
+        )
+        crop_menu.add_checkbutton(
+            label='Liang-Barsky', onvalue='liang-barsky', variable=self.crop_algo
         )

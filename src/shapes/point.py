@@ -1,5 +1,6 @@
 from math import sin, cos, radians
 
+
 class Point:
     def __init__(self, pos):
         self.pos = pos
@@ -33,25 +34,30 @@ class Point:
 
         temp_pos = (
             temp_pos[0] * cos(theta) - temp_pos[1] * sin(theta),
-            temp_pos[0] * sin(theta) + temp_pos[1] * cos(theta)
+            temp_pos[0] * sin(theta) + temp_pos[1] * cos(theta),
         )
 
         self.pos = (
             int(temp_pos[0] + origin[0]),
             int(temp_pos[1] + origin[1]),
         )
-    
+
     def scale(self, x, y, origin=(0, 0)):
         temp_pos = (self.pos[0] - origin[0], self.pos[1] - origin[1])
 
-        temp_pos = (
-            temp_pos[0] * x,
-            temp_pos[1] * y
-        )
+        temp_pos = (temp_pos[0] * x, temp_pos[1] * y)
 
         self.pos = (
             int(temp_pos[0] + origin[0]),
             int(temp_pos[1] + origin[1]),
+        )
+
+    def crop(self, xy_min, xy_max):
+        return (
+            self.pos[0] >= xy_min[0]
+            and self.pos[0] < xy_max[0]
+            and self.pos[1] >= xy_min[1]
+            and self.pos[1] < xy_max[1]
         )
 
     def plot(self, canvas, grid):

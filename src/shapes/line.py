@@ -91,13 +91,12 @@ class Line:
 
         steps = max(abs(dx), abs(dy))
 
-        x, y = self.start_pos[0], self.start_pos[1]
-        grid.get_pixel(round_func(x), round_func(y)).set_pixel(canvas, 1)
+        x, y = self.start_pos
         
+        x_step = dx / steps
+        y_step = dy / steps
+        grid.get_pixel(round_func(x), round_func(y)).set_pixel(canvas, 1)
         if steps > 0:
-            x_step = dx / steps
-            y_step = dy / steps
-            
             for _ in range(steps):
                 x, y = x + x_step, y + y_step
                 grid.get_pixel(round_func(x), round_func(y)).set_pixel(canvas, 1)
@@ -105,7 +104,7 @@ class Line:
     def plot_bresenham(self, canvas, grid):
         dx = self.end_pos[0] - self.start_pos[0]
         dy = self.end_pos[1] - self.start_pos[1]
-        
+
         incrx = 1 if dx >= 0 else -1
         incry = 1 if dy >= 0 else -1
 
@@ -152,4 +151,45 @@ class Line:
         elif algo == 'bresenham':
             self.plot_bresenham(canvas, grid)
 
+    def crop_cohen(self, xy_min, xy_max):
+        def region_code(point):
+            x, y = point
+            code = 0
+
+            if x < xy_min[0]:
+                code |= 1
+            if x >= xy_max[0]:
+                code |= 2
+            if y < xy_min[1]:
+                code |= 4
+            if y >= xy_max[1]:
+                code |= 8
+            
+            return code
+
+        inside = lambda c: c ^ 8 != 0
+        reject = lambda c1, c2: c1 & c2 != 0
+        # doing a bitwise xor with 8 represents inverting all relevant bits
+        accept = lambda c1, c2: (c1 | c2) == 0 
+
+        c1, c2 = region_code(self.start_pos), region_code(self.end_pos)
+        if c1 == 0 and c2 == 0:
+            return True
+        elif (c1 & c2) != 0:
+            return False
+        else:
+            cout = c1 if c1 != 0 else c2
+            return False
+
+
+
+    def crop(self, xy_min, xy_max, algo='cohen-sutherland'):
+        if algo != 'cohen-sutherland' and algo != 'liang-barsky':
+            raise Exception(f'Algorithim {algo} not implemented')
+        
+        if algo == 'cohen-sutherland':
+            return self.crop_cohen(xy_min, xy_max)
+        elif algo == 'liang-barsky':
+            raise Exception(f'Algorithim {algo} not implemented yet')
+            # self.plot_bresenham(canvas, grid)
 
