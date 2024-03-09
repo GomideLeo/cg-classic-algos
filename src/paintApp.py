@@ -243,8 +243,8 @@ class PaintApp:
         y_origin = tk.Entry(dialog, width=10)
         y_origin.grid(row=2, column=3, padx=5, pady=5)
 
-        x_origin.insert(0, str((self.cols - 1) / 2))
-        y_origin.insert(0, str((self.rows - 1) / 2))
+        x_origin.insert(0, str((self.origin[0] + self.origin[0] + self.cols - 1) / 2))
+        y_origin.insert(0, str((self.origin[1] + self.origin[1] + self.rows - 1) / 2))
 
         def close():
             if theta.get().lstrip('-+').isnumeric() == False:
@@ -309,8 +309,8 @@ class PaintApp:
         y_origin = tk.Entry(dialog, width=10)
         y_origin.grid(row=2, column=3, padx=5, pady=5)
 
-        x_origin.insert(0, str((self.cols - 1) / 2))
-        y_origin.insert(0, str((self.rows - 1) / 2))
+        x_origin.insert(0, str((self.origin[0] + self.origin[0] + self.cols - 1) / 2))
+        y_origin.insert(0, str((self.origin[1] + self.origin[1] + self.rows - 1) / 2))
 
         def close():
             if (
@@ -387,8 +387,8 @@ class PaintApp:
         y_origin = tk.Entry(dialog, width=10)
         y_origin.grid(row=2, column=3, padx=5, pady=5)
 
-        x_origin.insert(0, str((self.cols - 1) / 2))
-        y_origin.insert(0, str((self.rows - 1) / 2))
+        x_origin.insert(0, str((self.origin[0] + self.origin[0] + self.cols - 1) / 2))
+        y_origin.insert(0, str((self.origin[1] + self.origin[1] + self.rows - 1) / 2))
 
         def close():
             if (x_origin.get().replace('.', '', 1).isnumeric() == False) or (

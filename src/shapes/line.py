@@ -262,4 +262,3 @@ class Line:
             return self.crop_cohen(xy_min, xy_max)
         elif algo == 'liang-barsky':
             return self.crop_liang(xy_min, xy_max)
-            # self.plot_bresenham(canvas, grid)
