@@ -171,7 +171,7 @@ class Line:
         bit = lambda cod, bit: cod >> bit & 1
 
         c1, c2 = region_code(self.start_pos), region_code(self.end_pos)
-        
+
         if c1 == 0 and c2 == 0:
             return self
         elif (c1 & c2) != 0:
@@ -192,10 +192,18 @@ class Line:
                 y_int = self.start_pos[1] + (xy_max[0] - self.start_pos[0]) * m
             elif bit(cout, 2) == 1:
                 y_int = xy_min[1]
-                x_int = self.start_pos[0] + (xy_min[1] - self.start_pos[1]) / m if m != 0 else self.start_pos[0]
+                x_int = (
+                    self.start_pos[0] + (xy_min[1] - self.start_pos[1]) / m
+                    if m != 0
+                    else self.start_pos[0]
+                )
             elif bit(cout, 3) == 1:
                 y_int = xy_max[1]
-                x_int = self.start_pos[0] + (xy_max[1] - self.start_pos[1]) / m if m != 0 else self.start_pos[0]
+                x_int = (
+                    self.start_pos[0] + (xy_max[1] - self.start_pos[1]) / m
+                    if m != 0
+                    else self.start_pos[0]
+                )
 
             if c1 == cout:
                 return Line((round(x_int), round(y_int)), self.end_pos).crop_cohen(
@@ -206,6 +214,46 @@ class Line:
                     xy_min, xy_max
                 )
 
+    def crop_liang(self, xy_min, xy_max):
+        u1, u2 = 0, 1
+
+        dx = self.end_pos[0] - self.start_pos[0]
+        dy = self.end_pos[1] - self.start_pos[1]
+
+        def clip_test(p, q):
+            nonlocal u1, u2
+            if p < 0:
+                r = q / p
+                if r > u2:
+                    return False
+                elif r > u1:
+                    u1 = r
+            elif p > 0:
+                r = q / p
+                if r < u1:
+                    return False
+                elif r < u2:
+                    u2 = r
+            else:
+                if q < 0:
+                    return False
+
+            return True
+
+        if (
+            clip_test(-dx, self.start_pos[0] - xy_min[0])
+            and clip_test(dx, xy_max[0] - self.start_pos[0])
+            and clip_test(-dy, self.start_pos[1] - xy_min[1])
+            and clip_test(dx, xy_max[1] - self.start_pos[1])
+        ):
+            p1, p2 = self.start_pos, self.end_pos
+            if u2 < 1:
+                p2 = (round(p1[0] + u2 * dx), round(p1[1] + u2 * dy))
+            if u1 > 0:
+                p1 = (round(p1[0] + u1 * dx), round(p1[1] + u1 * dy))
+
+            return Line(p1, p2)
+
     def crop(self, xy_min, xy_max, algo='cohen-sutherland'):
         if algo != 'cohen-sutherland' and algo != 'liang-barsky':
             raise Exception(f'Algorithim {algo} not implemented')
@@ -213,5 +261,5 @@ class Line:
         if algo == 'cohen-sutherland':
             return self.crop_cohen(xy_min, xy_max)
         elif algo == 'liang-barsky':
-            raise Exception(f'Algorithim {algo} not implemented yet')
+            return self.crop_liang(xy_min, xy_max)
             # self.plot_bresenham(canvas, grid)
