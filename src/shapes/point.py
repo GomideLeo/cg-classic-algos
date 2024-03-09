@@ -53,12 +53,12 @@ class Point:
         )
 
     def crop(self, xy_min, xy_max):
-        return (
+        return self if (
             self.pos[0] >= xy_min[0]
             and self.pos[0] < xy_max[0]
             and self.pos[1] >= xy_min[1]
             and self.pos[1] < xy_max[1]
-        )
+        ) else None
 
     def plot(self, canvas, grid):
         grid.get_pixel(*self.pos).set_pixel(canvas, 1)

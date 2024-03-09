@@ -60,12 +60,12 @@ class Circle:
         )
     
     def crop(self, xy_min, xy_max):
-        return (
+        return self if (
             self.center[0] >= xy_min[0]
             and self.center[0] < xy_max[0]
             and self.center[1] >= xy_min[1]
             and self.center[1] < xy_max[1]
-        )
+        ) else None
 
     def plot(self, canvas, grid):
         def plot_points(x, y):

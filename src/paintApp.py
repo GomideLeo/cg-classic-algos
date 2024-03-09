@@ -50,9 +50,7 @@ class PaintApp:
         else:
             self.grid.get_pixel(*self.start_pos).set_pixel(canvas, self.prev_value)
             self.prev_value = None
-            c = Circle(self.start_pos, (px.x, px.y))
-            self.shapes.append(c)
-            c.plot(canvas, self.grid)
+            self.crop_canvas(self.start_pos, (px.x, px.y))
             self.start_pos = None
 
     def make_shape(self, ev, canvas, px):
@@ -65,11 +63,31 @@ class PaintApp:
         elif self.draw_shape.get() == 'crop':
             self.crop(canvas, px)
 
-    def reset_canvas(self, destroy_shapes=True, origin=(0,0)):
+    def crop_canvas(self, corner1, corner2):
+        if not hasattr(self, 'original_shape'):
+            self.original_shape = (self.cols, self.rows)
+
+        self.cols, self.rows = (
+            abs(corner1[0] - corner2[0]) + 1,
+            abs(corner1[1] - corner2[1]) + 1,
+        )
+        self.origin = (min(corner1[0], corner2[0]), min(corner1[1], corner2[1]))
+
+        self.reset_canvas(False)
+
+    def reset_crop(self):
+        self.cols, self.rows = self.original_shape
+        del self.original_shape
+
+        self.origin = (0, 0)
+
+        self.reset_canvas(False)
+
+    def reset_canvas(self, destroy_shapes=True):
         if hasattr(self, 'canvas'):
             self.canvas.destroy()
 
-        self.grid = Grid(self.rows, self.cols, origin)
+        self.grid = Grid(self.rows, self.cols, self.origin)
         self.canvas = self.grid.make_canvas(
             self.root, self.height, self.width, self.make_shape
         )
@@ -77,12 +95,22 @@ class PaintApp:
         if destroy_shapes or not hasattr(self, 'shapes'):
             self.shapes = []
         else:
-            max_pos = (origin[0] + self.cols, origin[1] + self.rows)
+            max_pos = (self.origin[0] + self.cols - 1, self.origin[1] + self.rows - 1)
             for s in self.shapes:
-                if s.crop(origin, max_pos, self.crop_algo.get()) if isinstance(s, Line) else s.crop(origin, max_pos):
-                    s.plot(self.canvas, self.grid, self.line_algo.get()) if isinstance(s, Line) else s.plot(self.canvas, self.grid)
+                s_draw = (
+                    s.crop(self.origin, max_pos, self.crop_algo.get())
+                    if isinstance(s, Line)
+                    else s.crop(self.origin, max_pos)
+                )
+                if s_draw is not None:
+                    print(f'{str(s_draw)} drawn')
+                    (
+                        s_draw.plot(self.canvas, self.grid, self.line_algo.get())
+                        if isinstance(s_draw, Line)
+                        else s_draw.plot(self.canvas, self.grid)
+                    )
                 else:
-                    print(f'shape {str(s)} ignored')
+                    print(f'{str(s)} ignored')
 
     def resize_dialog(self):
         dialog = tk.Toplevel()
@@ -124,6 +152,7 @@ class PaintApp:
                 int(width.get()),
             )
 
+            del self.original_shape
             self.reset_canvas()
 
             dialog.destroy()
@@ -404,6 +433,7 @@ class PaintApp:
 
         self.root = root
         self.rows, self.cols, self.height, self.width = rows, cols, height, width
+        self.origin = (0, 0)
         self.reset_canvas()
 
         configs_menu = tk.Menu(menubar, tearoff=False)
@@ -444,7 +474,7 @@ class PaintApp:
 
         draw_menu.add_separator()
 
-        draw_menu.add_command(label='Reset Crop', command=self.reflection_dialog)
+        draw_menu.add_command(label='Reset Crop', command=self.reset_crop)
 
         draw_menu.add_separator()
 
