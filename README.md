@@ -92,15 +92,15 @@ $ conda create --name <env> --file requirements python=3.10.13
 $ conda activate <env>
 ```
 
-or install on your python installation:
+or use pip to get the requirements:
 
-```
+```sh
 $ pip install -r requirements-pip.txt
 ```
 
 After installing the dependencies, simply run the file `main.py`:
 
-```
+```sh
 $ python main.py
 ```
 
