@@ -76,8 +76,9 @@ class PaintApp:
         self.reset_canvas(False)
 
     def reset_crop(self):
-        self.cols, self.rows = self.original_shape
-        del self.original_shape
+        if hasattr(self, 'original_shape'):
+            self.cols, self.rows = self.original_shape
+            del self.original_shape
 
         self.origin = (0, 0)
 
@@ -152,7 +153,8 @@ class PaintApp:
                 int(width.get()),
             )
 
-            del self.original_shape
+            if hasattr(self, 'original_shape'):
+                del self.original_shape
             self.reset_canvas()
 
             dialog.destroy()
