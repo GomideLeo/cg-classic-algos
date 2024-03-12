@@ -79,7 +79,7 @@ For the cropping functions, each of the shapes recieves the `xy_min` and `xy_max
 
 The exception is for the Line, that also recieves the algorithim its supposed to use, with `'cohen-sutherland'` and `'liang-barsky'` being the only valid values.
 
-For the circle, only if the center is inside the draw area it will be drawn.
+For the circle, only if the square that the circle is inscribed in is inside the crop area, the circle is drawn.
 
 ## Running the Code
 

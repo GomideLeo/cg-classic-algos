@@ -15,11 +15,12 @@ class Pixel:
         self.setPixel(canvas, 1 if self.value < 0.3 else 0)
 
     def set_pixel(self, canvas, value):
+        if self.id is None: return
+
         self.value = max(min(value, 1), 0)
 
         color = int(self.value*255)
         colorCode = '#%02x%02x%02x' % (color, color, color)
         outline = 'gray' if self.value < 0.3 else 'black'
 
-        if id is not None:
-            canvas.itemconfig(self.id, fill=colorCode, outline=outline)
+        canvas.itemconfig(self.id, fill=colorCode, outline=outline)
