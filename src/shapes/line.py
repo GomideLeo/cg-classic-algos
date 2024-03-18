@@ -4,17 +4,55 @@ from math import sin, cos, radians
 
 class Line:
     def __init__(self, start_pos, end_pos):
+        """
+        Initialize a Line object with the specified start and end positions.
+
+        Args:
+            start_pos (tuple): The starting position of the line.
+            end_pos (tuple): The ending position of the line.
+        """
+
         self.start_pos = start_pos
         self.end_pos = end_pos
 
     def __repr__(self) -> str:
+        """
+        Return a string representation of the Line object.
+
+        Returns:
+            str: The string representation of the Line object.
+        """
+
         return f'Line {self.start_pos} -> {self.end_pos}'
 
     def translate(self, x, y):
+        """
+        Translate the line by the specified x and y distances.
+
+        Args:
+            x (int): The distance to translate the line along the x-axis.
+            y (int): The distance to translate the line along the y-axis.
+
+        Returns:
+            None
+        """
+
         self.start_pos = (self.start_pos[0] + x, self.start_pos[1] + y)
         self.end_pos = (self.end_pos[0] + x, self.end_pos[1] + y)
 
     def reflect(self, reflect_x=True, reflect_y=True, reflect_origin=(0, 0)):
+        """
+        Reflect the line over the x-axis, y-axis, or both, with respect to the specified origin.
+
+        Args:
+            reflect_x (bool): Whether to reflect the line over the x-axis. Default is True.
+            reflect_y (bool): Whether to reflect the line over the y-axis. Default is True.
+            reflect_origin (tuple): The origin point for reflection. Default is (0, 0).
+
+        Returns:
+            None
+        """
+
         # using Array here bc tuple is static
         temp_pos1 = [
             self.start_pos[0] - reflect_origin[0],
@@ -44,6 +82,17 @@ class Line:
         )
 
     def rotate(self, angle, origin=(0, 0)):
+        """
+        Rotate the line by the specified angle around the specified origin.
+
+        Args:
+            angle (float): The angle to rotate the line, in degrees.
+            origin (tuple): The origin point for rotation. Default is (0, 0).
+
+        Returns:
+            None
+        """
+
         temp_pos1 = (self.start_pos[0] - origin[0], self.start_pos[1] - origin[1])
         temp_pos2 = (self.end_pos[0] - origin[0], self.end_pos[1] - origin[1])
 
@@ -69,6 +118,18 @@ class Line:
         )
 
     def scale(self, x, y, origin=(0, 0)):
+        """
+        Scale the line by the specified factors along the x and y axes, with respect to the specified origin.
+
+        Args:
+            x (float): The scaling factor along the x-axis.
+            y (float): The scaling factor along the y-axis.
+            origin (tuple): The origin point for scaling. Default is (0, 0).
+
+        Returns:
+            None
+        """
+
         temp_pos1 = (self.start_pos[0] - origin[0], self.start_pos[1] - origin[1])
         temp_pos2 = (self.end_pos[0] - origin[0], self.end_pos[1] - origin[1])
 
@@ -86,6 +147,18 @@ class Line:
         )
 
     def plot_dda(self, canvas, grid, round_func=round):
+        """
+        Plot the line using the Digital Differential Analyzer (DDA) algorithm.
+
+        Args:
+            canvas: The canvas to plot the line on.
+            grid: The grid object representing the canvas.
+            round_func (function): The rounding function to use for pixel coordinates. Default is round.
+
+        Returns:
+            None
+        """
+
         dx = self.end_pos[0] - self.start_pos[0]
         dy = self.end_pos[1] - self.start_pos[1]
 
@@ -103,6 +176,17 @@ class Line:
                 grid.get_pixel(round_func(x), round_func(y)).set_pixel(canvas, 1)
 
     def plot_bresenham(self, canvas, grid):
+        """
+        Plot the line using the Bresenham's line algorithm.
+
+        Args:
+            canvas: The canvas to plot the line on.
+            grid: The grid object representing the canvas.
+
+        Returns:
+            None
+        """
+
         dx = self.end_pos[0] - self.start_pos[0]
         dy = self.end_pos[1] - self.start_pos[1]
 
@@ -144,6 +228,18 @@ class Line:
                 grid.get_pixel(x, y).set_pixel(canvas, 1)
 
     def plot(self, canvas, grid, algo='dda'):
+        """
+        Plot the line on the specified canvas using the given grid and algorithm.
+
+        Args:
+            canvas: The canvas to plot the line on.
+            grid: The grid object representing the canvas.
+            algo (str): The algorithm to use for plotting ('dda' or 'bresenham'). Default is 'dda'.
+
+        Returns:
+            None
+        """
+
         if algo != 'dda' and algo != 'bresenham':
             raise Exception(f'Algorithim {algo} not implemented')
 
@@ -153,6 +249,17 @@ class Line:
             self.plot_bresenham(canvas, grid)
 
     def crop_cohen(self, xy_min, xy_max):
+        """
+        Crop the line using the Cohen-Sutherland line clipping algorithm.
+
+        Args:
+            xy_min (tuple): The minimum x and y coordinates for cropping.
+            xy_max (tuple): The maximum x and y coordinates for cropping.
+
+        Returns:
+            Line or None: The cropped Line object, or None if the line is completely outside the crop area.
+        """
+
         def region_code(point):
             x, y = point
             code = 0
@@ -215,6 +322,17 @@ class Line:
                 )
 
     def crop_liang(self, xy_min, xy_max):
+        """
+        Crop the line using the Liang-Barsky line clipping algorithm.
+
+        Args:
+            xy_min (tuple): The minimum x and y coordinates for cropping.
+            xy_max (tuple): The maximum x and y coordinates for cropping.
+
+        Returns:
+            Line or None: The cropped Line object, or None if the line is completely outside the crop area.
+        """
+
         u1, u2 = 0, 1
 
         dx = self.end_pos[0] - self.start_pos[0]
@@ -255,6 +373,18 @@ class Line:
             return Line(p1, p2)
 
     def crop(self, xy_min, xy_max, algo='cohen-sutherland'):
+        """
+        Crop the line based on the specified minimum and maximum coordinates using the specified algorithm.
+
+        Args:
+            xy_min (tuple): The minimum x and y coordinates for cropping.
+            xy_max (tuple): The maximum x and y coordinates for cropping.
+            algo (str): The algorithm to use for cropping ('cohen-sutherland' or 'liang-barsky'). Default is 'cohen-sutherland'.
+
+        Returns:
+            Line or None: The cropped Line object, or None if the line is completely outside the crop area.
+        """
+
         if algo != 'cohen-sutherland' and algo != 'liang-barsky':
             raise Exception(f'Algorithim {algo} not implemented')
 

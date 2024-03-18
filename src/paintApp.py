@@ -6,11 +6,34 @@ from .gui import Grid
 
 class PaintApp:
     def make_point(self, canvas, px):
+        """
+        Create a Point object at the given pixel coordinates and plot it on the canvas.
+
+        Args:
+            canvas: The canvas to plot the Point on.
+            px: The Pixel object representing the coordinates of the Point.
+
+        Returns:
+            None
+        """
+
         p = Point((px.x, px.y))
         self.shapes.append(p)
         p.plot(canvas, self.grid)
 
     def make_line(self, canvas, px):
+        """
+        Create a Line object from the starting pixel coordinates to the given pixel coordinates
+        and plot it on the canvas using the specified line algorithm.
+
+        Args:
+            canvas: The canvas to plot the Line on.
+            px: The Pixel object representing the ending coordinates of the Line.
+
+        Returns:
+            None
+        """
+        
         if not hasattr(self, 'start_pos'):
             self.start_pos = None
         if self.start_pos is None:
@@ -26,6 +49,18 @@ class PaintApp:
             self.start_pos = None
 
     def make_circle(self, canvas, px):
+        """
+        Create a Circle object with the center at the starting pixel coordinates and the radius
+        determined by the ending pixel coordinates, then plot it on the canvas.
+
+        Args:
+            canvas: The canvas to plot the Circle on.
+            px: The Pixel object representing the ending coordinates of the Circle's radius.
+
+        Returns:
+            None
+        """
+
         if not hasattr(self, 'start_pos'):
             self.start_pos = None
         if self.start_pos is None:
@@ -41,6 +76,17 @@ class PaintApp:
             self.start_pos = None
 
     def crop(self, canvas, px):
+        """
+        Crop the canvas based on the starting and ending pixel coordinates.
+
+        Args:
+            canvas: The canvas to crop.
+            px: The Pixel object representing the ending coordinates of the crop area.
+
+        Returns:
+            None
+        """
+
         if not hasattr(self, 'start_pos'):
             self.start_pos = None
         if self.start_pos is None:
@@ -54,6 +100,19 @@ class PaintApp:
             self.start_pos = None
 
     def make_shape(self, ev, canvas, px):
+        """
+        Determine the shape to draw based on the user's selection and call the respective
+        make_* method to create and plot the shape.
+
+        Args:
+            ev: The event that triggered the shape creation.
+            canvas: The canvas to plot the shape on.
+            px: The Pixel object representing the coordinates of the shape.
+
+        Returns:
+            None
+        """
+
         if self.draw_shape.get() == 'point':
             self.make_point(canvas, px)
         elif self.draw_shape.get() == 'line':
@@ -64,6 +123,18 @@ class PaintApp:
             self.crop(canvas, px)
 
     def crop_canvas(self, corner1, corner2):
+        """
+        Crop the canvas to the specified area defined by the two corner points.
+        Updates the canvas size and origin accordingly.
+
+        Args:
+            corner1: Tuple representing the (x, y) coordinates of one corner of the crop area.
+            corner2: Tuple representing the (x, y) coordinates of the opposite corner of the crop area.
+
+        Returns:
+            None
+        """
+
         if not hasattr(self, 'original_shape'):
             self.original_shape = (self.cols, self.rows)
 
@@ -76,6 +147,14 @@ class PaintApp:
         self.reset_canvas(False)
 
     def reset_crop(self):
+        """
+        Reset the canvas crop to its original size and position.
+        If the canvas was not previously cropped, this method has no effect.
+
+        Returns:
+            None
+        """
+
         if hasattr(self, 'original_shape'):
             self.cols, self.rows = self.original_shape
             del self.original_shape
@@ -85,6 +164,16 @@ class PaintApp:
         self.reset_canvas(False)
 
     def reset_canvas(self, destroy_shapes=True):
+        """
+        Reset the canvas, optionally destroying all shapes drawn on it.
+
+        Args:
+            destroy_shapes (bool): If True, all shapes drawn on the canvas will be destroyed. Default is True.
+
+        Returns:
+            None
+        """
+
         if hasattr(self, 'canvas'):
             self.canvas.destroy()
 
@@ -438,6 +527,7 @@ class PaintApp:
         self.origin = (0, 0)
         self.reset_canvas()
 
+        # make Configs Menu
         configs_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Configs', menu=configs_menu)
 
@@ -446,6 +536,7 @@ class PaintApp:
         configs_menu.add_separator()
         configs_menu.add_command(label='Exit', command=root.destroy)
 
+        # make Transformations Menu
         transf_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Transformations', menu=transf_menu)
 
@@ -454,9 +545,11 @@ class PaintApp:
         transf_menu.add_command(label='Scale', command=self.scale_dialog)
         transf_menu.add_command(label='Reflection', command=self.reflection_dialog)
 
+        # make Draw Menu
         draw_menu = tk.Menu(menubar, tearoff=False)
         menubar.add_cascade(label='Draw', menu=draw_menu)
 
+        # saves states for shapes methods
         self.draw_shape = tk.StringVar(value='point')
         self.line_algo = tk.StringVar(value='dda')
         self.crop_algo = tk.StringVar(value='cohen-sutherland')
