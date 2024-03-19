@@ -251,6 +251,8 @@ class Line:
     def crop_cohen(self, xy_min, xy_max):
         """
         Crop the line using the Cohen-Sutherland line clipping algorithm.
+        This implementation of the algorithm is recursive and will call itself when the created Line is not 
+        completely inside or outside the crop area.
 
         Args:
             xy_min (tuple): The minimum x and y coordinates for cropping.
